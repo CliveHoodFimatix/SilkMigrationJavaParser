@@ -56,10 +56,16 @@ public class Main {
         for (SingleMemberAnnotationExpr annotator : lAnnotator) {
             String line = getLine(String.valueOf(annotator.getRange().map(range -> range.begin.line)));
             String endLine = getLine(String.valueOf(annotator.getRange().map(range -> range.end.line)));
-           // var theFunction = annotator.getParentNode().stream().toList();
-            fOutput.add(String.format("%s,%s,ANNOTATION,%s", line, endLine, annotator));
-
-
+            String ann = annotator.toString();
+            if (ann.contains("\n")){
+                List<String> ps = Arrays.stream(ann.toString().split("\n" )).toList();
+                for (String thisP:ps) {
+                    fOutput.add(String.format("%s,%s,ANNOTATION,%s", line, endLine, thisP.replace("\r","")));
+                }
+            }
+            else {
+                fOutput.add(String.format("%s,%s,ANNOTATION,%s", line, endLine, annotator));
+            }
         }
 
         List<InitializerDeclaration> lInitaliser = compilationUnit.findAll(InitializerDeclaration.class).stream().toList();
