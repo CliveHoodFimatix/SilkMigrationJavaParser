@@ -17,6 +17,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Main {
@@ -178,11 +179,22 @@ public class Main {
         List<ExpressionStmt> estmt = compilationUnit.findAll(ExpressionStmt.class).stream().toList();
         for (ExpressionStmt exp : estmt) {
             String line = getLine(String.valueOf(exp.getRange().map(range -> range.begin.line)));
+//            if(line.equals("19241")){
+//                System.out.println(line + "," + line);
+//            }
             String endLine = getLine(String.valueOf(exp.getRange().map(range -> range.end.line)));
             List<Node> parts = exp.getExpression().getChildNodes();
             if (parts.size() > 1) {
                 for (Node p : parts) {
-                    fOutput.add(String.format("%s,%s,EXPRESSION,%s", line, endLine, p.toString()));
+                    if(p.toString().contains("\n")){
+                        List<String> ps = Arrays.stream(p.toString().split("\n" )).toList();
+                        for (String thisP:ps) {
+                            fOutput.add(String.format("%s,%s,EXPRESSION,%s", line, endLine, thisP.replace("\r","")));
+                        }
+                    }
+                    else {
+                        fOutput.add(String.format("%s,%s,EXPRESSION,%s", line, endLine, p));
+                    }
                 }
             }
         }
