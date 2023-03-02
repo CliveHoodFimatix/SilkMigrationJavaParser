@@ -115,6 +115,10 @@ public class Main {
                         continue;
                     }
                     if (anoName.equals("Keyword") || anoName.equals("KeywordGroup")) {
+                        String match = String.format("%s,%s,ANNOTATION,%s", line, line, ano.toString());
+                        if (!fOutput.contains(match)){
+                            fOutput.add(match);
+                        }
                          fOutput.add(String.format("%s,%s,KEYWORD_METHOD,%s:%s", anoLine, anoEndLine, ano.getChildNodes().get(1).toString(),methodName));
                     } else {
                         fOutput.add(String.format("%s,%s,METHOD,%s:%s", anoLine, anoEndLine, anoName, ano.getChildNodes().get(1).toString()));
