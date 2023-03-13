@@ -57,13 +57,17 @@ public class Main {
             String line = getLine(String.valueOf(annotator.getRange().map(range -> range.begin.line)));
             String endLine = getLine(String.valueOf(annotator.getRange().map(range -> range.end.line)));
             String ann = annotator.toString();
-            if (ann.contains("\n")){
-                List<String> ps = Arrays.stream(ann.toString().split("\n" )).toList();
-                for (String thisP:ps) {
-                    fOutput.add(String.format("%s,%s,ANNOTATION,%s", line, endLine, thisP.replace("\r","")));
+            if (ann.length() >= 2) {
+                if (ann.substring(0, 2).equals(("//"))) {
+                    continue;
                 }
             }
-            else {
+            if (ann.contains("\n")) {
+                List<String> ps = Arrays.stream(ann.toString().split("\n")).toList();
+                for (String thisP : ps) {
+                    fOutput.add(String.format("%s,%s,ANNOTATION,%s", line, endLine, thisP.replace("\r", "")));
+                }
+            } else {
                 fOutput.add(String.format("%s,%s,ANNOTATION,%s", line, endLine, annotator));
             }
         }
@@ -111,25 +115,25 @@ public class Main {
                 String anoLine = getLine(String.valueOf(ano.getRange().map(range -> range.begin.line)));
                 String anoEndLine = getLine(String.valueOf(ano.getRange().map(range -> range.end.line)));
                 if (ano.getChildNodes().size() > 1) {
-                    if (anoName.equals("Test")){
+                    if (anoName.equals("Test")) {
                         continue;
                     }
                     if (anoName.equals("Keyword") || anoName.equals("KeywordGroup")) {
                         String match = String.format("%s,%s,ANNOTATION,%s", line, line, ano.toString());
-                        if (!fOutput.contains(match)){
+                        if (!fOutput.contains(match)) {
                             fOutput.add(match);
                         }
-                         fOutput.add(String.format("%s,%s,KEYWORD_METHOD,%s:%s", anoLine, anoEndLine, ano.getChildNodes().get(1).toString(),methodName));
+                        fOutput.add(String.format("%s,%s,KEYWORD_METHOD,%s:%s", anoLine, anoEndLine, ano.getChildNodes().get(1).toString(), methodName));
                     } else {
                         fOutput.add(String.format("%s,%s,METHOD,%s:%s", anoLine, anoEndLine, anoName, ano.getChildNodes().get(1).toString()));
                     }
 
                 } else {
-                    if (anoName.equals("Test")){
+                    if (anoName.equals("Test")) {
                         continue;
                     }
                     if (anoName.equals("Keyword") || anoName.equals("KeywordGroup")) {
-                        fOutput.add(String.format("%s,%s,KEYWORD_METHOD,%s:%s", anoLine, anoEndLine, ano.getChildNodes().get(1).toString(),methodName));
+                        fOutput.add(String.format("%s,%s,KEYWORD_METHOD,%s:%s", anoLine, anoEndLine, ano.getChildNodes().get(1).toString(), methodName));
                     } else {
                         fOutput.add(String.format("%s,%s,METHOD,%s:%s", anoLine, anoEndLine, ano.getName(), ano.getChildNodes().get(0).toString()));
                     }
@@ -164,7 +168,7 @@ public class Main {
             List<VariableDeclarator> vars = fd.getVariables().stream().toList();
             for (VariableDeclarator aVar : vars) {
                 System.out.println(line + "," + aVar.getName() + " - " + aVar.getTypeAsString());
-                fOutput.add(String.format("%s,%s,FIELD,%s:%s:%s", line, endLine, aVar.getName(), aVar.getTypeAsString(),aVar.getInitializer()));
+                fOutput.add(String.format("%s,%s,FIELD,%s:%s:%s", line, endLine, aVar.getName(), aVar.getTypeAsString(), aVar.getInitializer()));
             }
 
         }
@@ -196,13 +200,12 @@ public class Main {
             List<Node> parts = exp.getExpression().getChildNodes();
             if (parts.size() > 1) {
                 for (Node p : parts) {
-                    if(p.toString().contains("\n")){
-                        List<String> ps = Arrays.stream(p.toString().split("\n" )).toList();
-                        for (String thisP:ps) {
-                            fOutput.add(String.format("%s,%s,EXPRESSION,%s", line, endLine, thisP.replace("\r","")));
+                    if (p.toString().contains("\n")) {
+                        List<String> ps = Arrays.stream(p.toString().split("\n")).toList();
+                        for (String thisP : ps) {
+                            fOutput.add(String.format("%s,%s,EXPRESSION,%s", line, endLine, thisP.replace("\r", "")));
                         }
-                    }
-                    else {
+                    } else {
                         fOutput.add(String.format("%s,%s,EXPRESSION,%s", line, endLine, p));
                     }
                 }
